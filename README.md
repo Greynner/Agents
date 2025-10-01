@@ -59,6 +59,7 @@ Criterios de aceptación:
 
 
     📂 Estructura del proyecto
+    
     IA-Agent_QA/
 ├── hannah_agent.ipynb   # Notebook (backend, pruebas de prompts)
 ├── app.py               # Frontend en Streamlit
