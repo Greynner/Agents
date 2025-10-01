@@ -58,15 +58,16 @@ Criterios de aceptación:
     Then accede exitosamente
 
 
-    📂 Estructura del proyecto
-    
-    IA-Agent_QA/
+ ## 📂 Project Structure
+ 
+IA-Agent_QA/
 ├── hannah_agent.ipynb   # Notebook (backend, pruebas de prompts)
 ├── app.py               # Frontend en Streamlit
 ├── requirements.txt     # Dependencias del proyecto
-├── .env                 # (ignorado en git) tu API key
-├── README.md            # Este archivo
-└── docs/demo_ui.png     # Screenshot demo
+├── .env                 # (ignorado en git) contiene tu API key
+├── README.md            # Documentación principal
+└── docs/
+└── demo_ui.png          # Screenshot de la demo en Streamlit
 
 
 📈 Roadmap
