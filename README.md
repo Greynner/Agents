@@ -67,7 +67,7 @@ IA-Agent_QA/
 ├── .env                 # (ignorado en git) contiene tu API key
 ├── README.md            # Documentación principal
 └── docs/
-└── demo_ui.png          # Screenshot de la demo en Streamlit
+└── demo_ui.png      # Screenshot de la demo en Streamlit
 
 
 📈 Roadmap
