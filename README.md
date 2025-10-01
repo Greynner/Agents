@@ -58,8 +58,9 @@ Criterios de aceptación:
     Then accede exitosamente
 
 
- ## 📂 Project Structure
- 
+## 📂 Project Structure
+
+```text
 IA-Agent_QA/
 ├── hannah_agent.ipynb   # Notebook (backend, pruebas de prompts)
 ├── app.py               # Frontend en Streamlit
@@ -67,7 +68,7 @@ IA-Agent_QA/
 ├── .env                 # (ignorado en git) contiene tu API key
 ├── README.md            # Documentación principal
 └── docs/
-└── demo_ui.png      # Screenshot de la demo en Streamlit
+    └── demo_ui.png      # Screenshot de la demo en Streamlit
 
 
 📈 Roadmap
