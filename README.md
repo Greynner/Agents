@@ -1,61 +1,84 @@
-<p align="center">
-  <img src="hannah.svg" alt="Hannah QA" width="300"/>
-</p>
+🌸 Hannah – AI-powered QA Agent
 
-# 🌸 Hannah – QA IA ANGENT
+Hannah es un agente de QA impulsado por IA que transforma un requerimiento (HDU / historia de usuario) en:
+	•	📑 Matriz de pruebas en Excel
+	•	🧪 Casos Gherkin (Cucumber) listos para automatización
 
-Hannah 🌸 es un **agente de QA con Inteligencia Artificial** que transforma **requerimientos funcionales** (HDU, historias de usuario o levantamientos) en **matrices de pruebas** y **casos de prueba en Gherkin (Cucumber)** listos para automatización.
+✅ Diseñada para ahorrar tiempo a equipos QA y aumentar la cobertura de pruebas.
 
-Su propósito es liberar tiempo de los equipos de QA, automatizando la parte más repetitiva: **leer requerimientos, entender reglas de negocio y convertirlas en pruebas estructuradas y consistentes**.
 
----
+🚀 Demo online
 
-## 🚀 Funcionalidades
+🔗 Demo en Streamlit (ejemplo, ajusta con tu link real cuando despliegues)
 
-- Lee requerimientos en lenguaje natural.
-- Identifica criterios clave (segmentos, flags, reglas de negocio, UI).
-- Genera automáticamente:
-  - **Matriz de pruebas** en Excel.
-  - **Casos Gherkin (Cucumber)** listos para frameworks BDD.
-- Exporta resultados en archivos `.xlsx` y `.feature`.
+Interfaz sencilla de Hannah en Streamlit: ingresas un requerimiento y obtienes la matriz + casos descargables
 
----
+⚙️ Cómo usar localmente
+1. Clonar el repo
+git clone https://github.com/tu-usuario/IA-Agent_QA.git
+cd IA-Agent_QA
 
-## 🛠️ Tecnologías
+2. Crear entorno virtual (ejemplo con conda)
+conda create -n qa-agent python=3.11
+conda activate qa-agent
 
-- [Python 3.10+](https://www.python.org/)
-- [OpenAI API](https://platform.openai.com/)
-- [Jupyter Notebook](https://jupyter.org/)
-- [pandas](https://pandas.pydata.org/)
-- [openpyxl](https://openpyxl.readthedocs.io/)
-- [python-dotenv](https://pypi.org/project/python-dotenv/)
+3. Instalar dependencias
+pip install -r requirements.txt
 
----
+4. Configurar tu API Key
+Crea un archivo .env en la raíz con:
+OPENAI_API_KEY=sk-xxxxxx_tu_api_key
 
-## 📂 Estructura del proyecto
-IA-Agent_QA/
-├── qa_agent.ipynb       # Notebook principal de Hannah 🌸
-├── requirements.txt      # Dependencias del proyecto
-├── .env                  # Variables de entorno (NO subir a GitHub)
-├── .gitignore
-└── README.md
+5. Ejecutar el frontend
+streamlit run app.py
+La app se abrirá en http://localhost:8501 🚀
 
----
 
-## ⚙️ Instalación y uso
+📌 Ejemplo de requerimiento
+HDU: [Web] Validar flujo de inicio de sesión en la banca digital
 
- **Clona el repositorio**
-   ```bash
-   git clone https://github.com/tu-usuario/IA-Agent_QA.git
-   cd IA-Agent_QA
+Objetivo:
+- Permitir acceso con credenciales válidas
+- Bloquear al usuario tras 3 intentos fallidos
+- Mostrar error con credenciales incorrectas
 
-   	
-    
-    Ejecuta el notebook
-	•	Abre qa_agent.ipynb en Visual Studio Code con la extensión de Jupyter.
-	•	Corre celda por celda (Shift + Enter).
+Criterios de aceptación:
+1. Usuario válido → acceso correcto
+2. Usuario inválido → mensaje “Credenciales incorrectas”
+3. 3 intentos fallidos → cuenta bloqueada
+
+🔎 Salida esperada:
+	•	Una tabla con TC001, TC002, TC003…
+	•	Escenarios en formato Gherkin:
+
+  Feature: Validar login
+  Scenario: Login exitoso
+    Given un usuario válido
+    When introduce credenciales correctas
+    Then accede exitosamente
+
+
+    📂 Estructura del proyecto
+    IA-Agent_QA/
+├── hannah_agent.ipynb   # Notebook (backend, pruebas de prompts)
+├── app.py               # Frontend en Streamlit
+├── requirements.txt     # Dependencias del proyecto
+├── .env                 # (ignorado en git) tu API key
+├── README.md            # Este archivo
+└── docs/demo_ui.png     # Screenshot demo
+
+
+📈 Roadmap
+	•	🔜 Integración con Jira / Confluence
+	•	🔜 Dashboard con métricas de cobertura QA
+	•	🔜 Extensión a pruebas automáticas E2E
+
+
+👨‍💻 Autor
+
+Greynner Moreno
+QA Engineer & AI Entrepreneur 🇨🇱 | Construyendo el futuro del QA con IA
 
 ⸻
-Hannah 🌸 – Agente de QA con IA
-Created by por Greynner Moreno
+
 
