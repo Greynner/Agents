@@ -1,0 +1,19 @@
+{
+  "name": "qa-agent",
+  "version": "1.0.0",
+  "description": "QA AI Agent with Doppler integration and automation scripts",
+  "scripts": {
+    "start": "doppler run -- python main.py",
+    "dev": "doppler run -- uvicorn main:app --reload",
+    "test": "doppler run -- python test_doppler.py",
+    "lint": "black .",
+    "deploy": "echo '🚀 Ready to deploy to Vercel or Modal'",
+    "src:app": "doppler run -- streamlit run src/app.py",
+    "src:app-hannah": "doppler run -- streamlit run src/app_hannah_error_handling.py",
+    "src:app-ms": "doppler run -- streamlit run src/app_ms_agent.py",
+    "src:main": "doppler run -- python src/main.py",
+    "src:test": "doppler run -- python src/test_doppler_src.py"
+  },
+  "author": "Greynner Moreno",
+  "license": "MIT"
+}
