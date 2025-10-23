@@ -1,31 +1,39 @@
-Feature: Validación de login
+Feature: Registro de usuario
 
-  Scenario: Login exitoso
-    Given el usuario ingresa un correo electrónico "usuario@ejemplo.com"
-    And el usuario ingresa una contraseña "contraseña123"
-    When el usuario presiona el botón "Iniciar sesión"
-    Then el usuario es redirigido a "/dashboard"
-    And muestra "Bienvenido/a nuevamente."
+  Scenario: Registro exitoso
+    Given el correo "usuario@ejemplo.com"
+    And el nombre "Juan"
+    And la contraseña "Contraseña123"
+    When el usuario intenta registrarse
+    Then muestra "Usuario registrado correctamente"
 
-  Scenario: Login fallido - campos vacíos
-    Given el usuario no ingresa un correo electrónico
-    And el usuario no ingresa una contraseña
-    When el usuario presiona el botón "Iniciar sesión"
-    Then muestra "Por favor, completa todos los campos."
+  Scenario: Registro fallido - Correo existente
+    Given el correo "usuario@ejemplo.com"
+    And el nombre "Pedro"
+    And la contraseña "Contraseña456"
+    When el usuario intenta registrarse
+    Then muestra "El correo ya está registrado"
 
-  Scenario: Login fallido - correo inválido
-    Given el usuario ingresa un correo electrónico "usuarioejemplo.com"
-    And el usuario ingresa una contraseña "contraseña123"
-    When el usuario presiona el botón "Iniciar sesión"
-    Then muestra "Correo electrónico inválido."
+  Scenario: Registro fallido - Contraseña débil
+    Given el correo "nuevo@ejemplo.com"
+    And el nombre "Ana"
+    And la contraseña "123"
+    When el usuario intenta registrarse
+    Then muestra "La contraseña debe tener al menos 8 caracteres"
 
-  Scenario: Login fallido - credenciales incorrectas
-    Given el usuario ingresa un correo electrónico "usuario@ejemplo.com"
-    And el usuario ingresa una contraseña "incorrecta123"
-    When el usuario presiona el botón "Iniciar sesión"
-    Then muestra "Credenciales incorrectas."
+  Scenario: Registro fallido - Campos vacíos
+    Given el correo ""
+    And el nombre ""
+    And la contraseña ""
+    When el usuario intenta registrarse
+    Then muestra "Todos los campos son obligatorios"
+
+  Scenario: Registro fallido - Formato de correo inválido
+    Given el correo "usuarioejemplo.com"
+    And el nombre "Luis"
+    And la contraseña "Contraseña789"
+    When el usuario intenta registrarse
+    Then muestra "Formato de correo inválido"
 ```
 
-### Notas
-- Asegúrate de que el manejo de errores y la validación de campos se realicen sin recargar la página, utilizando JavaScript o React.
-- Los mensajes de error deben ser claros y visibles para el usuario.
+Estos casos de prueba y escenarios Gherkin cubren las principales funcionalidades y validaciones requeridas para el registro de un nuevo usuario en el sistema.

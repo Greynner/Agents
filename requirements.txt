@@ -21,3 +21,6 @@ streamlit>=1.30.0
 # === OPTIONAL (UTILITIES) ===
 requests
 tqdm
+
+# === MODAL (CLOUD DEPLOYMENT) ===
+modal

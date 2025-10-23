@@ -12,7 +12,13 @@
     "src:app-hannah": "doppler run -- streamlit run src/app_hannah_error_handling.py",
     "src:app-ms": "doppler run -- streamlit run src/app_ms_agent.py",
     "src:main": "doppler run -- python src/main.py",
-    "src:test": "doppler run -- python src/test_doppler_src.py"
+    "src:test": "doppler run -- python src/test_doppler_src.py",
+    "src:modal": "doppler run -- python src/modal_app.py",
+    "hannah:modal": "doppler run -- python src/hannah_modal_app.py",
+    "modal:test": "doppler run -- python src/modal_app.py",
+    "modal:deploy": "doppler run -- modal deploy src/modal_app.py",
+    "hannah:deploy": "doppler run -- modal deploy src/hannah_modal_app.py",
+    "hannah:run": "doppler run -- modal run -m src.hannah_modal_app --requirement"
   },
   "author": "Greynner Moreno",
   "license": "MIT"

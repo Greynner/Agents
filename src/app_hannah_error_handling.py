@@ -7,6 +7,7 @@ import pandas as pd
 import streamlit as st
 from openai import OpenAI, OpenAIError
 from dotenv import load_dotenv
+import modal
 
 # ==============================================
 # 1️⃣ CONFIGURACIÓN INICIAL
@@ -15,12 +16,8 @@ from dotenv import load_dotenv
 # Cargar variables de entorno
 load_dotenv()
 
-# Inicializar cliente OpenAI con control de errores
-try:
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-except Exception as e:
-    st.error("⚠️ Error al inicializar el cliente OpenAI. Revisa tu archivo .env o la variable OPENAI_API_KEY.")
-    st.stop()
+# Importar cliente de Modal
+from hannah_modal_client import call_modal_backend
 
 # ==============================================
 # 2️⃣ INTERFAZ DE USUARIO
@@ -35,6 +32,9 @@ st.write("📋 Ingresa un requerimiento funcional o historia de usuario y Hannah
 st.markdown("- Una **matriz de pruebas (.xlsx)**")
 st.markdown("- Casos **Gherkin (.feature)** listos para tu framework BDD")
 
+# Indicador de Modal
+st.info("☁️ **Backend:** Ejecutándose en Modal (Serverless Cloud) | 🔐 **Variables:** Doppler Secure")
+
 # Campo de texto del usuario
 requerimiento = st.text_area("✍️ Ingrese el requerimiento aquí:", height=180)
 
@@ -48,41 +48,29 @@ if st.button("🚀 Generar Matriz de prueba y  Casos de Prueba"):
         st.stop()
 
     try:
-        # Prompt base
-        SYSTEM_PROMPT = """
-        Eres Hannah 🌸, una QA Engineer Senior especializada en automatización de pruebas.
-        Tu tarea es analizar un requerimiento y generar una matriz de pruebas y casos Gherkin claros y consistentes.
-        """
-
-        FEW_SHOT_EXAMPLE = """
-        | ID | Escenario | Datos de entrada | Resultado esperado |
-        |----|------------|------------------|--------------------|
-        | TC001 | Login exitoso | Usuario válido | Acceso concedido |
-        | TC002 | Login fallido | Usuario inválido | Mensaje de error "Credenciales inválidas" |
-
-        Feature: Validación de login
-          Scenario: Login exitoso
-            Given usuario válido
-            When ingresa credenciales correctas
-            Then muestra "Acceso concedido"
-        """
-
         # ==============================================
-        # 4️⃣ LLAMADA A LA API DE OPENAI
+        # 4️⃣ LLAMADA A MODAL (BACKEND SERVERLESS)
         # ==============================================
-        with st.spinner("🤖 Hannah está analizando tu requerimiento..."):
-            resp = client.chat.completions.create(
-                model="gpt-4o-mini",
-                temperature=0.3,
-                messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": f"{FEW_SHOT_EXAMPLE}\n\nRequerimiento:\n{requerimiento}"}
-                ]
-            )
-
-        output = resp.choices[0].message.content
-        st.success("✅ Casos de prueba generados correctamente por Hannah.")
-        st.text_area("🧠 Resultado de Hannah:", value=output, height=400)
+        with st.spinner("🤖 Hannah está analizando tu requerimiento en la nube..."):
+            # Llamar a la función de Modal
+            result = call_modal_backend(requerimiento)
+        
+        # Verificar el resultado
+        if result["status"] == "success":
+            output = result["output"]
+            matrix_data = result["matrix_data"]
+            gherkin_content = result["gherkin_content"]
+            
+            st.success("✅ Casos de prueba generados correctamente por Hannah en Modal! 🌸")
+            st.text_area("🧠 Resultado de Hannah:", value=output, height=400)
+            
+            # Mostrar información adicional
+            st.info(f"📊 Se generaron {len(matrix_data)} casos de prueba")
+            if gherkin_content:
+                st.info("🧾 Casos Gherkin generados correctamente")
+        else:
+            st.error(f"❌ Error en Modal: {result.get('error', 'Error desconocido')}")
+            st.stop()
 
         # ==============================================
         # 5️⃣ PROCESAR RESULTADOS Y EXPORTAR ARCHIVOS
@@ -90,17 +78,9 @@ if st.button("🚀 Generar Matriz de prueba y  Casos de Prueba"):
         try:
             os.makedirs("Outputs", exist_ok=True)
 
-            # Extraer matriz de prueba
-            rows = []
-            for line in output.splitlines():
-                if "|" in line and "---" not in line:
-                    cols = [c.strip() for c in line.split("|") if c.strip()]
-                    if len(cols) > 1:
-                        rows.append(cols)
-
-            # Guardar matriz en Excel
-            if rows:
-                df = pd.DataFrame(rows[1:], columns=rows[0])
+            # Usar datos de Modal para crear Excel
+            if matrix_data and len(matrix_data) > 0:
+                df = pd.DataFrame(matrix_data)
                 matriz_path = "Outputs/matriz_pruebas.xlsx"
                 df.to_excel(matriz_path, index=False)
 
@@ -112,19 +92,11 @@ if st.button("🚀 Generar Matriz de prueba y  Casos de Prueba"):
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     )
 
-            # Extraer y guardar casos Gherkin
-            gherkin = []
-            capture = False
-            for line in output.splitlines():
-                if line.strip().startswith(("Feature", "Scenario")):
-                    capture = True
-                if capture:
-                    gherkin.append(line)
-
-            if gherkin:
+            # Usar contenido Gherkin de Modal
+            if gherkin_content:
                 gherkin_path = "Outputs/casos.feature"
                 with open(gherkin_path, "w", encoding="utf-8") as f:
-                    f.write("\n".join(gherkin))
+                    f.write(gherkin_content)
 
                 with open(gherkin_path, "rb") as file:
                     st.download_button(
@@ -137,8 +109,6 @@ if st.button("🚀 Generar Matriz de prueba y  Casos de Prueba"):
         except Exception as e:
             st.error(f"⚠️ Error al generar o exportar archivos: {e}")
 
-    except OpenAIError as e:
-        st.error(f"❌ Error al conectar con OpenAI: {e}")
     except Exception as e:
         st.error(f"⚠️ Ocurrió un error inesperado: {e}")
 
@@ -146,4 +116,4 @@ if st.button("🚀 Generar Matriz de prueba y  Casos de Prueba"):
 # 6️⃣ PIE DE PÁGINA
 # ==============================================
 st.divider()
-st.caption("🌸 Hannah QA Agent – Powered by OpenAI · Creado por Greynner M.")
+st.caption("🌸 Hannah QA Agent – Powered by Modal & OpenAI · Creado por Greynner M.")
