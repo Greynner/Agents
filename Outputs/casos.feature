@@ -7,33 +7,33 @@ Feature: Registro de usuario
     When el usuario intenta registrarse
     Then muestra "Usuario registrado correctamente"
 
-  Scenario: Registro fallido - Correo existente
+  Scenario: Registro fallido - correo ya existe
     Given el correo "usuario@ejemplo.com"
-    And el nombre "Pedro"
-    And la contraseña "Contraseña456"
+    And el nombre "Juan"
+    And la contraseña "Contraseña123"
     When el usuario intenta registrarse
-    Then muestra "El correo ya está registrado"
+    Then muestra "El correo ya está en uso"
 
-  Scenario: Registro fallido - Contraseña débil
+  Scenario: Registro fallido - contraseña débil
     Given el correo "nuevo@ejemplo.com"
     And el nombre "Ana"
     And la contraseña "123"
     When el usuario intenta registrarse
-    Then muestra "La contraseña debe tener al menos 8 caracteres"
+    Then muestra "La contraseña es demasiado débil"
 
-  Scenario: Registro fallido - Campos vacíos
+  Scenario: Registro fallido - datos incompletos
     Given el correo ""
-    And el nombre ""
-    And la contraseña ""
+    And el nombre "Juan"
+    And la contraseña "Contraseña123"
     When el usuario intenta registrarse
     Then muestra "Todos los campos son obligatorios"
 
-  Scenario: Registro fallido - Formato de correo inválido
-    Given el correo "usuarioejemplo.com"
-    And el nombre "Luis"
-    And la contraseña "Contraseña789"
+  Scenario: Registro fallido - formato de correo inválido
+    Given el correo "usuario@ejemplo"
+    And el nombre "Juan"
+    And la contraseña "Contraseña123"
     When el usuario intenta registrarse
     Then muestra "Formato de correo inválido"
 ```
 
-Estos casos de prueba y escenarios Gherkin cubren las principales funcionalidades y validaciones requeridas para el registro de un nuevo usuario en el sistema.
+Estos casos de prueba y escenarios Gherkin cubren las funcionalidades básicas y las validaciones necesarias para el registro de un nuevo usuario en la aplicación.
