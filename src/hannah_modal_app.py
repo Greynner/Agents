@@ -1,14 +1,17 @@
 import modal
 import os
 import pandas as pd
+from fastapi import Request
+from fastapi.responses import JSONResponse
 from openai import OpenAI, OpenAIError
 
 # Define la imagen base con todas las dependencias
 image = modal.Image.debian_slim().pip_install(
-    "openai", 
-    "pandas", 
+    "openai",
+    "pandas",
     "streamlit",
-    "openpyxl"
+    "openpyxl",
+    "fastapi",
 )
 
 # Crea la app de Modal
@@ -104,6 +107,44 @@ def generate_test_matrix_and_gherkin(requirement: str):
             "gherkin_content": "",
             "matrix_columns": []
         }
+
+
+@app.function()
+@modal.web_endpoint(method="POST")
+async def analizar_requerimiento(request: Request):
+    """Endpoint HTTP para recibir requerimientos desde el frontend."""
+    cors_headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+    }
+
+    if request.method == "OPTIONS":
+        response = JSONResponse(status_code=204, content=None)
+        for key, value in cors_headers.items():
+            response.headers[key] = value
+        return response
+
+    payload = await request.json()
+    requirement = (
+        (payload.get("requerimiento") or payload.get("requirement") or "").strip()
+    )
+
+    if not requirement:
+        response = JSONResponse(
+            status_code=400,
+            content={"status": "error", "error": "El campo 'requerimiento' es obligatorio."},
+        )
+        for key, value in cors_headers.items():
+            response.headers[key] = value
+        return response
+
+    result = generate_test_matrix_and_gherkin.call(requirement)
+
+    response = JSONResponse(content=result)
+    for key, value in cors_headers.items():
+        response.headers[key] = value
+    return response
 
 # Función para probar localmente
 if __name__ == "__main__":

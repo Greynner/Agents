@@ -1,12 +1,20 @@
-import streamlit as st
-from openai import OpenAI
-import pandas as pd
 import os
+import pandas as pd
+import streamlit as st
 from dotenv import load_dotenv
+from fastapi import FastAPI
+from openai import OpenAI
 
 # Cargar variables de entorno
 load_dotenv()
 client = OpenAI()
+
+app = FastAPI()
+
+
+@app.get("/")
+def root():
+    return {"message": "Servidor corriendo correctamente 🚀"}
 
 # =====================
 # Clase Hannah 🌸
@@ -48,56 +56,55 @@ Feature: Validar login de usuarios
     Then debe acceder exitosamente al sistema
 """
 
-# =====================
-# Interfaz con Streamlit
-# =====================
-st.set_page_config(page_title="Hannah 🌸 - QA Agent", page_icon="🌸")
+def run_streamlit_app():
+    """Interfaz Streamlit original."""
+    st.set_page_config(page_title="Hannah 🌸 - QA Agent", page_icon="🌸")
 
-st.title("🌸 Hannah – QA Agent with AI")
-st.write("Transforma un requerimiento en **matriz de pruebas** y **casos Gherkin** listos para automatización.")
+    st.title("🌸 Hannah – QA Agent with AI")
+    st.write("Transforma un requerimiento en **matriz de pruebas** y **casos Gherkin** listos para automatización.")
 
-# Input de usuario
-requerimiento = st.text_area("✍️ Ingresa tu requerimiento (HDU / historia de usuario):")
+    requerimiento = st.text_area("✍️ Ingresa tu requerimiento (HDU / historia de usuario):")
 
-if st.button("Generar pruebas"):
-    hannah = Hannah(client)
-    output = hannah.generar_pruebas(requerimiento, few_shot_example)
+    if st.button("Generar pruebas"):
+        hannah = Hannah(client)
+        output = hannah.generar_pruebas(requerimiento, few_shot_example)
 
-    st.subheader("📊 Resultado generado por Hannah 🌸")
-    st.text(output)
+        st.subheader("📊 Resultado generado por Hannah 🌸")
+        st.text(output)
 
-    # Procesar tabla en pandas
-    rows = []
-    for line in output.splitlines():
-        if "|" in line and "---" not in line:
-            cols = [c.strip() for c in line.split("|") if c.strip()]
-            if len(cols) > 1:
-                rows.append(cols)
+        rows = []
+        for line in output.splitlines():
+            if "|" in line and "---" not in line:
+                cols = [c.strip() for c in line.split("|") if c.strip()]
+                if len(cols) > 1:
+                    rows.append(cols)
 
-    if rows:
-        df = pd.DataFrame(rows[1:], columns=rows[0])
-        st.write("### 📑 Matriz de pruebas")
-        st.dataframe(df)
+        if rows:
+            df = pd.DataFrame(rows[1:], columns=rows[0])
+            st.write("### 📑 Matriz de pruebas")
+            st.dataframe(df)
 
-        # Descargar Excel
-        excel_file = "matriz_pruebas.xlsx"
-        df.to_excel(excel_file, index=False)
-        with open(excel_file, "rb") as f:
-            st.download_button("📥 Descargar matriz Excel", f, file_name=excel_file)
+            excel_file = "matriz_pruebas.xlsx"
+            df.to_excel(excel_file, index=False)
+            with open(excel_file, "rb") as f:
+                st.download_button("📥 Descargar matriz Excel", f, file_name=excel_file)
 
-    # Procesar casos Gherkin
-    gherkin = []
-    capture = False
-    for line in output.splitlines():
-        if line.strip().startswith(("Feature", "Scenario")):
-            capture = True
-        if capture:
-            gherkin.append(line)
+        gherkin = []
+        capture = False
+        for line in output.splitlines():
+            if line.strip().startswith(("Feature", "Scenario")):
+                capture = True
+            if capture:
+                gherkin.append(line)
 
-    if gherkin:
-        gherkin_file = "casos.feature"
-        with open(gherkin_file, "w", encoding="utf-8") as f:
-            f.write("\n".join(gherkin))
+        if gherkin:
+            gherkin_file = "casos.feature"
+            with open(gherkin_file, "w", encoding="utf-8") as f:
+                f.write("\n".join(gherkin))
 
-        with open(gherkin_file, "rb") as f:
-            st.download_button("📥 Descargar casos Gherkin", f, file_name=gherkin_file)
+            with open(gherkin_file, "rb") as f:
+                st.download_button("📥 Descargar casos Gherkin", f, file_name=gherkin_file)
+
+
+if __name__ == "__main__":
+    run_streamlit_app()
