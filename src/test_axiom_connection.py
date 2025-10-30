@@ -1,16 +1,11 @@
-#!/usr/bin/env python3
 """
-🔍 Test de Conexión Axiom con Doppler
-Verifica la integración entre Axiom y Doppler para confirmar que las variables de entorno
-están disponibles y la conexión funciona correctamente.
+Test de conexión con Axiom usando Doppler
 """
-
 import os
 import sys
 import requests
-import json
 from datetime import datetime, timezone
-from typing import Dict, Any, Optional
+from utils_axiom import logger
 
 class AxiomConnectionTester:
     """Clase para probar la conexión con Axiom usando variables de Doppler"""

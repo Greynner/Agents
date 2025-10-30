@@ -1,21 +1,13 @@
+"""
+Test simple de variables de entorno de Doppler
+"""
 import os
 
-print("🔍 Verificando variables de entorno desde Doppler...\n")
+print("🔍 Verificando variables de Doppler...\n")
 
-# Variables esperadas
-vars_to_check = [
-    "OPENAI_API_KEY",
-    "DATABASE_URL",
-    "MODAL_TOKEN",
-    "AXIOM_API_TOKEN",
-    "ENVIRONMENT"
-]
+vars_to_check = ["OPENAI_API_KEY", "AXIOM_API_TOKEN", "AXIOM_ORG_ID", "ENVIRONMENT"]
 
 for var in vars_to_check:
-    value = os.getenv(var)
-    if value:
-        print(f"✅ {var} cargada correctamente")
-    else:
-        print(f"❌ {var} NO está disponible")
+    print(f"{'✅' if os.getenv(var) else '❌'} {var}")
 
-print("\n✅ Test de Doppler completado.")
+print("\n✅ Test completado.")

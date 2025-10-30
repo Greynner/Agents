@@ -1,45 +1,47 @@
-#!/usr/bin/env python3
 """
-🔍 Test de conexión con Modal desde el frontend
-Verifica que la función de Modal se puede llamar correctamente
+Test de conexión con Modal y cliente simplificado
 """
-
 import os
 import sys
 
-def test_modal_connection():
-    """Prueba la conexión con Modal"""
-    print("🔍 Probando conexión con Modal...\n")
+def test_modal_direct():
+    """Prueba Modal directamente"""
+    print("🔍 Test 1: Modal Directo\n")
     
     try:
-        # Importar la función de Modal
         from src.hannah_modal_app import generate_test_matrix_and_gherkin
+        print("✅ Función Modal importada")
         
-        print("✅ Función de Modal importada correctamente")
-        
-        # Probar la función localmente
-        print("🧪 Probando función localmente...")
-        result = generate_test_matrix_and_gherkin.local("El usuario debe poder iniciar sesión")
-        
-        print(f"✅ Resultado: {result['status']}")
-        print(f"📊 Casos generados: {len(result.get('matrix_data', []))}")
-        print(f"🧾 Gherkin generado: {'Sí' if result.get('gherkin_content') else 'No'}")
-        
+        result = generate_test_matrix_and_gherkin.local("Usuario debe poder iniciar sesión")
+        print(f"✅ Status: {result['status']}")
+        print(f"📊 Casos: {len(result.get('matrix_data', []))}")
         return True
-        
-    except ImportError as e:
-        print(f"❌ Error al importar: {e}")
-        return False
     except Exception as e:
-        print(f"❌ Error inesperado: {e}")
+        print(f"❌ Error: {e}")
+        return False
+
+def test_modal_client():
+    """Prueba el cliente de Modal"""
+    print("\n🔍 Test 2: Cliente Modal\n")
+    
+    try:
+        from src.hannah_modal_client import call_modal_backend
+        print("✅ Cliente importado")
+        
+        result = call_modal_backend("Usuario debe poder iniciar sesión")
+        print(f"✅ Status: {result['status']}")
+        print(f"📊 Casos: {len(result.get('matrix_data', []))}")
+        return True
+    except Exception as e:
+        print(f"❌ Error: {e}")
         return False
 
 if __name__ == "__main__":
-    success = test_modal_connection()
+    success1 = test_modal_direct()
+    success2 = test_modal_client()
     
-    if success:
-        print("\n🎉 ¡Conexión con Modal exitosa!")
-        print("✅ El frontend puede conectarse al backend de Modal")
+    if success1 and success2:
+        print("\n✅ Todos los tests pasaron")
     else:
-        print("\n⚠️ Error en la conexión con Modal")
+        print("\n❌ Algunos tests fallaron")
         sys.exit(1)

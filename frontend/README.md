@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🧠 Hannah QA Agent - Frontend
 
-## Getting Started
+Frontend de Next.js para **Hannah QA Agent**, generador de matrices de prueba y casos Gherkin con IA.
 
-First, run the development server:
+## 🚀 Inicio Rápido
+
+### Instalación
+
+```bash
+npm install
+```
+
+### Desarrollo
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## ⚙️ Configuración
 
-To learn more about Next.js, take a look at the following resources:
+Configura la variable de entorno `NEXT_PUBLIC_MODAL_ENDPOINT` con la URL del backend de Modal:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```env
+NEXT_PUBLIC_MODAL_ENDPOINT=https://tu-usuario--qa-agent-backend-modal.functions.modal.run
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🏗️ Stack Tecnológico
 
-## Deploy on Vercel
+- **Next.js 16** - Framework React
+- **TypeScript** - Tipado estático
+- **Tailwind CSS 4** - Estilos
+- **React 19** - Biblioteca UI
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📁 Estructura
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+  app/
+    layout.tsx    # Layout principal
+    page.tsx      # Página principal con formulario
+    globals.css   # Estilos globales
+```
+
+## 🎯 Características
+
+- ✅ Interfaz limpia y moderna
+- ✅ Generación de matrices de prueba
+- ✅ Visualización de casos Gherkin
+- ✅ Responsive design
+- ✅ Manejo de errores
+- ✅ Loading states
+
+## 📝 Uso
+
+1. Ingresa un requerimiento QA en el formulario
+2. Haz clic en "Enviar a Hannah"
+3. Visualiza la matriz de pruebas y casos Gherkin generados
+4. Revisa la respuesta completa del backend si es necesario
+
+---
+
+Desarrollado con ❤️ para automatizar QA

@@ -2,19 +2,16 @@ import os
 import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
-from fastapi import FastAPI
 from openai import OpenAI
 
 # Cargar variables de entorno
 load_dotenv()
-client = OpenAI()
 
-app = FastAPI()
-
-
-@app.get("/")
-def root():
-    return {"message": "Servidor corriendo correctamente 🚀"}
+# Inicializar cliente OpenAI
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+    print("⚠️ Advertencia: OPENAI_API_KEY no está configurada. Usa Doppler o un archivo .env")
+client = OpenAI(api_key=api_key)
 
 # =====================
 # Clase Hannah 🌸
@@ -56,22 +53,31 @@ Feature: Validar login de usuarios
     Then debe acceder exitosamente al sistema
 """
 
-def run_streamlit_app():
-    """Interfaz Streamlit original."""
-    st.set_page_config(page_title="Hannah 🌸 - QA Agent", page_icon="🌸")
+# =====================
+# Interfaz Streamlit
+# =====================
+st.set_page_config(page_title="Hannah 🌸 - QA Agent", page_icon="🌸")
 
-    st.title("🌸 Hannah – QA Agent with AI")
-    st.write("Transforma un requerimiento en **matriz de pruebas** y **casos Gherkin** listos para automatización.")
+st.title("🌸 Hannah – QA Agent with AI")
+st.write("Transforma un requerimiento en **matriz de pruebas** y **casos Gherkin** listos para automatización.")
 
-    requerimiento = st.text_area("✍️ Ingresa tu requerimiento (HDU / historia de usuario):")
+requerimiento = st.text_area("✍️ Ingresa tu requerimiento (HDU / historia de usuario):")
 
-    if st.button("Generar pruebas"):
+if st.button("Generar pruebas"):
+    if not requerimiento.strip():
+        st.warning("⚠️ Debes ingresar un requerimiento antes de continuar.")
+        st.stop()
+
+    try:
         hannah = Hannah(client)
-        output = hannah.generar_pruebas(requerimiento, few_shot_example)
-
+        with st.spinner("🤖 Hannah está generando las pruebas..."):
+            output = hannah.generar_pruebas(requerimiento, few_shot_example)
+        
+        st.success("✅ Pruebas generadas correctamente!")
         st.subheader("📊 Resultado generado por Hannah 🌸")
         st.text(output)
 
+        # Procesar matriz de pruebas
         rows = []
         for line in output.splitlines():
             if "|" in line and "---" not in line:
@@ -84,11 +90,14 @@ def run_streamlit_app():
             st.write("### 📑 Matriz de pruebas")
             st.dataframe(df)
 
-            excel_file = "matriz_pruebas.xlsx"
+            # Guardar en Outputs
+            os.makedirs("Outputs", exist_ok=True)
+            excel_file = "Outputs/matriz_pruebas.xlsx"
             df.to_excel(excel_file, index=False)
             with open(excel_file, "rb") as f:
-                st.download_button("📥 Descargar matriz Excel", f, file_name=excel_file)
+                st.download_button("📥 Descargar matriz Excel", f, file_name="matriz_pruebas.xlsx")
 
+        # Procesar casos Gherkin
         gherkin = []
         capture = False
         for line in output.splitlines():
@@ -98,13 +107,11 @@ def run_streamlit_app():
                 gherkin.append(line)
 
         if gherkin:
-            gherkin_file = "casos.feature"
+            gherkin_file = "Outputs/casos.feature"
             with open(gherkin_file, "w", encoding="utf-8") as f:
                 f.write("\n".join(gherkin))
 
             with open(gherkin_file, "rb") as f:
-                st.download_button("📥 Descargar casos Gherkin", f, file_name=gherkin_file)
-
-
-if __name__ == "__main__":
-    run_streamlit_app()
+                st.download_button("📥 Descargar casos Gherkin", f, file_name="casos.feature")
+    except Exception as e:
+        st.error(f"❌ Error: {e}")
