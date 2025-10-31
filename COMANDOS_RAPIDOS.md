@@ -18,6 +18,22 @@ doppler run -- streamlit run src/app_hannah_error_handling_with_axiom.py
 doppler run -- streamlit run src/app_ms_agent.py
 ```
 
+### 🌸 IA_agentQA_V3.py - Versión Unificada (Doppler + OpenAI + Modal + Axiom + Vercel)
+
+```bash
+# 🧪 Ejecución local (prueba)
+doppler run -- python src/IA_agentQA_V3.py
+
+# 🚀 Desplegar a Modal (producción)
+modal deploy src/IA_agentQA_V3.py
+
+# 📝 Ejecutar función Modal localmente
+doppler run -- modal run src/IA_agentQA_V3.py::generate_test_matrix_and_gherkin --requirement "Tu requerimiento aquí"
+
+# ⚡ Sin Doppler (usando .env)
+python src/IA_agentQA_V3.py
+```
+
 ### 🧪 Tests
 
 ```bash
