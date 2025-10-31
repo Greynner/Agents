@@ -11,7 +11,9 @@ type HannahResponse = {
   error?: string;
 };
 
-const ENDPOINT = process.env.NEXT_PUBLIC_MODAL_ENDPOINT ?? "";
+// Usar la variable de entorno o el endpoint de Modal como fallback
+const ENDPOINT = process.env.NEXT_PUBLIC_MODAL_ENDPOINT || 
+                 "https://greynner--hannah-qa-agent-v3-analizar-requerimiento.modal.run";
 
 export default function Home() {
   const [requirement, setRequirement] = useState("");
