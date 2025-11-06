@@ -34,6 +34,22 @@ doppler run -- modal run src/IA_agentQA_V3.py::generate_test_matrix_and_gherkin 
 python src/IA_agentQA_V3.py
 ```
 
+### 🤖 IA_agentQA_ms_modal.py - Microservicios (Doppler + OpenAI + Modal + Axiom + Vercel)
+
+```bash
+# 🧪 Ejecución local (prueba)
+doppler run -- python src/IA_agentQA_ms_modal.py
+
+# 🚀 Desplegar a Modal (producción)
+modal deploy src/IA_agentQA_ms_modal.py
+
+# 📝 Ejecutar función Modal localmente
+doppler run -- modal run src/IA_agentQA_ms_modal.py::generate_ms_test_cases --requirement "Validar endpoint GET /api/v1/clientes/{id}"
+
+# ⚡ Sin Doppler (usando .env)
+python src/IA_agentQA_ms_modal.py
+```
+
 ### 🧪 Tests
 
 ```bash
