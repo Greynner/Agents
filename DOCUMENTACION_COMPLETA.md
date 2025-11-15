@@ -18,7 +18,8 @@
 
 **Archivos importantes:**
 - `README.md` - Documentación principal del proyecto
-- `requirements.txt` - Dependencias Python
+- `requirements.txt` - Dependencias mínimas (proxy Vercel)
+- `requirements.local.txt` - Dependencias completas para desarrollo Python
 - `package.json` - Configuración Node.js (si aplica)
 - `COMANDOS_RAPIDOS.md` - Guía rápida de comandos
 - `.gitignore` - Archivos ignorados por Git
@@ -1022,21 +1023,13 @@ export default function RootLayout({
 ### `requirements.txt`
 
 ```txt
-openai>=1.0.0          # Cliente de OpenAI
-langchain              # Framework para LLMs (no usado actualmente, pero en requirements)
-playwright             # Para pruebas E2E (futuro)
-pytest                 # Framework de testing
-python-dotenv>=1.0.0   # Cargar variables de entorno desde .env
-pandas>=2.0.0          # Manipulación de datos
-openpyxl               # Generar archivos Excel
-streamlit>=1.30.0      # Framework para UIs (versiones anteriores)
-requests               # Peticiones HTTP
-modal                  # Framework para deployment serverless
-uvicorn                # Servidor ASGI (para FastAPI)
-fastapi                # Framework web para APIs
+fastapi==0.111.0
+httpx==0.28.1
 ```
 
-**Propósito:** Lista todas las dependencias Python del proyecto.
+**Propósito:** Dependencias mínimas para el proxy Python que corre en Vercel.
+
+> Para el stack completo del backend utiliza `requirements.local.txt`, que mantiene todas las librerías necesarias para desarrollo (OpenAI, LangChain, Modal, Playwright, etc.).
 
 ---
 

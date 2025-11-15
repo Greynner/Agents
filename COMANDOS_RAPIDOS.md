@@ -81,7 +81,7 @@ Ver [SCRIPTS_BASH.md](SCRIPTS_BASH.md) para todos los comandos detallados.
 
 ```bash
 # Instalar dependencias
-pip install -r requirements.txt
+pip install -r requirements.local.txt
 
 # Crear .env
 echo "OPENAI_API_KEY=tu_key" > .env

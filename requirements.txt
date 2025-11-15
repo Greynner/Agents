@@ -1,29 +1,3 @@
-openai>=1.0.0
-langchain
-playwright
-pytest
-python-dotenv
-# === CORE DEPENDENCIES ===
-openai>=1.0.0
-pandas>=2.0.0
-python-dotenv>=1.0.0
-
-# === NOTEBOOKS & VISUALIZATION ===
-ipython
-jupyter
-notebook
-openpyxl  # para exportar Excel
-matplotlib
-
-# === FRONTEND (STREAMLIT) ===
-streamlit>=1.30.0
-
-# === OPTIONAL (UTILITIES) ===
-requests
-tqdm
-
-# === MODAL (CLOUD DEPLOYMENT) ===
-modal
-
-uvicorn
-fastapi
+# Dependencias mínimas para el proxy FastAPI que corre en Vercel
+fastapi==0.111.0
+httpx==0.28.1

@@ -91,7 +91,8 @@ IA-Agent-QA/
 │   ├── matriz_pruebas.xlsx
 │   └── casos.feature
 │
-├── requirements.txt              # Dependencias Python
+├── requirements.txt              # Dependencias mínimas (proxy Vercel)
+├── requirements.local.txt        # Stack completo para desarrollo
 ├── COMANDOS_RAPIDOS.md          # Guía de comandos
 └── README.md                     # Este archivo
 ```
