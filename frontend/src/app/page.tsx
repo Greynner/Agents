@@ -21,6 +21,12 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<HannahResponse | null>(null);
 
+  const handleNewRequirement = () => {
+    setRequirement("");
+    setResult(null);
+    setError(null);
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -62,78 +68,88 @@ export default function Home() {
   const hasMatrix = result && result.matrix_columns?.length && result.matrix_data?.length;
 
   return (
-    <div className="flex min-h-screen justify-center bg-gray-100 py-12 px-4">
-      <main className="w-full max-w-4xl space-y-8 rounded-2xl border border-gray-200 bg-white p-8 shadow-lg">
-        <header>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            🧠 Hannah QA Agent
-          </h1>
-          <p className="text-gray-600">
-            Genera matrices de prueba y casos Gherkin con IA
-          </p>
+    <div className="flex min-h-screen justify-center bg-black py-16 px-6 text-slate-100">
+      <main className="w-full max-w-xl space-y-8 rounded-[32px] border border-white/5 bg-[#0B0B0F] px-10 py-12 shadow-[0_30px_70px_-35px_rgba(0,0,0,0.9)]">
+        <header className="flex flex-col gap-4">
+          <div className="space-y-3">
+            <h1 className="text-3xl font-semibold text-slate-50">
+              
+       Hannah QA Agent
+            </h1>
+            <p className="text-base leading-relaxed text-slate-300">
+              Generate test matrices and Gherkin scenarios with AI
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleNewRequirement}
+            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/5 bg-transparent px-4 py-3 text-sm font-medium text-slate-200 transition hover:border-white/15 hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-purple-400/40"
+          >
+            ➕ Add new requirement
+          </button>
         </header>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {!ENDPOINT && (
-            <div className="rounded-xl border border-orange-300 bg-orange-50 p-4 text-sm text-orange-800">
+            <div className="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4 text-sm text-amber-100">
               ⚠️ Configura NEXT_PUBLIC_MODAL_ENDPOINT
             </div>
           )}
           
           <label className="block">
-            <span className="text-sm font-semibold text-green-700 uppercase mb-2 block">
-              Requerimiento QA
+            <span className="mb-3 block text-xs font-semibold tracking-[0.2em] text-slate-400">
+              BUSINESS REQUIREMENT
             </span>
             <textarea
               value={requirement}
               onChange={(e) => setRequirement(e.target.value)}
               rows={6}
-              className="w-full rounded-xl border border-gray-200 bg-gray-50 p-4 text-gray-700 focus:border-green-400 focus:ring-2 focus:ring-green-200 outline-none transition"
-              placeholder="Ejemplo: Como usuario quiero iniciar sesión..."
+              className="w-full rounded-2xl border border-white/5 bg-[#050507] p-4 text-base text-slate-100 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.02)] transition focus:border-purple-500/60 focus:ring-2 focus:ring-purple-500/30"
+              placeholder="Example: As a user, I want to log in..."
             />
           </label>
           
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-gradient-to-r from-yellow-400 via-orange-400 to-green-400 px-6 py-3 font-semibold text-gray-900 transition hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full rounded-2xl bg-gradient-to-r from-indigo-500 via-fuchsia-500 to-purple-500 px-6 py-3 font-semibold text-white transition hover:shadow-[0_20px_45px_-18px_rgba(192,132,252,0.85)] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {loading ? "⏳ Generando..." : "🚀 Enviar a Hannah"}
+            {loading ? "⏳ Generating..." : "🚀 Send to Hannah"}
           </button>
           
           {error && (
-            <div className="rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-800">
+            <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-4 text-sm text-rose-100">
               ❌ {error}
             </div>
           )}
         </form>
 
         {result && (
-          <section className="space-y-6 rounded-2xl border border-gray-200 bg-gray-50 p-6">
+          <section className="space-y-6 rounded-[28px] border border-white/5 bg-[#08080B] p-6">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-1">
-                📊 Resultado
+              <h2 className="text-xl font-semibold text-slate-50 mb-1">
+                📊 Result
               </h2>
-              <p className="text-sm text-gray-600">
-                Status: <span className="font-bold text-green-600">{result.status.toUpperCase()}</span>
+              <p className="text-sm text-slate-300">
+                Status: <span className="font-bold text-emerald-300">{result.status.toUpperCase()}</span>
               </p>
             </div>
 
             {hasMatrix && (
-              <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-                <table className="min-w-full divide-y divide-gray-200 text-sm">
-                  <thead className="bg-green-50 text-xs uppercase text-green-700">
+              <div className="overflow-x-auto rounded-2xl border border-white/5 bg-[#050507]">
+                <table className="min-w-full divide-y divide-white/5 text-sm text-slate-200">
+                  <thead className="bg-white/5 text-xs uppercase tracking-[0.18em] text-slate-300">
                     <tr>
                       {result.matrix_columns.map((col) => (
-                        <th key={col} className="px-4 py-3 font-medium">{col}</th>
+                        <th key={col} className="px-4 py-3 font-medium tracking-wide">{col}</th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody className="divide-y divide-white/5">
                     {result.matrix_data.map((row, i) => (
-                      <tr key={i} className="bg-white">
+                      <tr key={i} className="bg-transparent">
                         {result.matrix_columns.map((col) => (
-                          <td key={col} className="px-4 py-3 text-gray-700">{row[col]}</td>
+                          <td key={col} className="px-4 py-3 text-slate-200">{row[col]}</td>
                         ))}
                       </tr>
                     ))}
@@ -144,18 +160,18 @@ export default function Home() {
 
             {result.gherkin_content && (
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🧾 Casos Gherkin</h3>
-                <pre className="whitespace-pre-wrap rounded-xl border border-yellow-200 bg-yellow-50 p-4 text-sm">
+                <h3 className="text-lg font-semibold text-slate-50 mb-2">🧾 Gherkin Scenarios</h3>
+                <pre className="whitespace-pre-wrap rounded-2xl border border-white/5 bg-[#050507] p-4 text-sm text-indigo-100">
                   {result.gherkin_content}
                 </pre>
               </div>
             )}
 
-            <details className="rounded-xl border border-gray-200 bg-gray-50">
-              <summary className="cursor-pointer px-4 py-3 text-sm font-semibold text-orange-600">
-                🔍 Ver respuesta completa
+            <details className="rounded-2xl border border-white/5 bg-transparent">
+              <summary className="cursor-pointer px-4 py-3 text-sm font-semibold text-slate-200">
+                🔍 View full response
               </summary>
-              <pre className="max-h-72 overflow-auto p-4 text-xs">
+              <pre className="max-h-72 overflow-auto p-4 text-xs text-slate-200">
                 {JSON.stringify(result, null, 2)}
               </pre>
             </details>
