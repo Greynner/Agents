@@ -11,9 +11,12 @@ type HannahResponse = {
   error?: string;
 };
 
-// Usar la variable de entorno o el endpoint de Modal como fallback
-const ENDPOINT = process.env.NEXT_PUBLIC_MODAL_ENDPOINT || 
-                 "https://greynner--hannah-qa-agent-v3-analizar-requerimiento.modal.run";
+// Usar el proxy de Vercel (ruta relativa) o variable de entorno como fallback
+// El proxy está en /api/modal_proxy.py y reenvía a Modal
+const ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT || 
+                 (typeof window !== 'undefined' 
+                   ? `${window.location.origin}/api/analizar-requerimiento`
+                   : '/api/analizar-requerimiento');
 
 export default function Home() {
   const [requirement, setRequirement] = useState("");
@@ -50,14 +53,26 @@ export default function Home() {
         body: JSON.stringify({ requerimiento: requirement }),
       });
 
+      if (!res.ok) {
+        const errorText = await res.text();
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { error: errorText || `Error ${res.status}: ${res.statusText}` };
+        }
+        throw new Error(errorData.error || errorData.detail || `Error ${res.status}`);
+      }
+
       const data: HannahResponse = await res.json();
 
-      if (!res.ok || data.status !== "success") {
+      if (data.status !== "success") {
         throw new Error(data.error || "Error al generar.");
       }
 
       setResult(data);
     } catch (err) {
+      console.error("Error en la solicitud:", err);
       setError(err instanceof Error ? err.message : "Error inesperado.");
       setResult(null);
     } finally {
@@ -92,7 +107,7 @@ export default function Home() {
         <form onSubmit={handleSubmit} className="space-y-5">
           {!ENDPOINT && (
             <div className="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4 text-sm text-amber-100">
-              ⚠️ Configura NEXT_PUBLIC_MODAL_ENDPOINT
+              ⚠️ Configura NEXT_PUBLIC_API_ENDPOINT o asegúrate de que el proxy esté configurado
             </div>
           )}
           
