@@ -11,9 +11,25 @@ type HannahResponse = {
   error?: string;
 };
 
-// Usar la variable de entorno o el endpoint de Modal como fallback
-const ENDPOINT = process.env.NEXT_PUBLIC_MODAL_ENDPOINT_MS || 
-                 "https://greynner--hannah-ms-agent-analizar-requerimiento-ms.modal.run";
+const ENDPOINT = process.env.NEXT_PUBLIC_MODAL_ENDPOINT_MS;
+
+function downloadText(content: string, filename: string, mime = "text/plain") {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function matrixToCSV(columns: string[], rows: Record<string, string>[]) {
+  const header = columns.map((c) => `"${c}"`).join(",");
+  const body = rows.map((row) =>
+    columns.map((col) => `"${(row[col] ?? "").replace(/"/g, '""')}"`).join(",")
+  );
+  return [header, ...body].join("\n");
+}
 
 export default function MicroservicesPage() {
   const [requirement, setRequirement] = useState("");
@@ -25,12 +41,17 @@ export default function MicroservicesPage() {
     e.preventDefault();
 
     if (!ENDPOINT) {
-      setError("Configura NEXT_PUBLIC_MODAL_ENDPOINT_MS.");
+      setError("Configura la variable NEXT_PUBLIC_MODAL_ENDPOINT_MS.");
       return;
     }
 
     if (!requirement.trim()) {
       setError("Ingresa un requerimiento.");
+      return;
+    }
+
+    if (requirement.length > 5000) {
+      setError("El requerimiento no puede superar 5000 caracteres.");
       return;
     }
 
@@ -79,7 +100,7 @@ export default function MicroservicesPage() {
               ⚠️ Configura NEXT_PUBLIC_MODAL_ENDPOINT_MS
             </div>
           )}
-          
+
           <label className="block">
             <span className="text-sm font-semibold text-blue-700 uppercase mb-2 block">
               Requerimiento de Microservicio
@@ -88,11 +109,15 @@ export default function MicroservicesPage() {
               value={requirement}
               onChange={(e) => setRequirement(e.target.value)}
               rows={6}
+              maxLength={5000}
               className="w-full rounded-xl border border-gray-200 bg-gray-50 p-4 text-gray-700 focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none transition"
               placeholder="Ejemplo: Validar que el endpoint GET /api/v1/clientes/{id} retorne 200 con datos válidos y 404 si el cliente no existe."
             />
+            <span className="mt-1 block text-right text-xs text-gray-400">
+              {requirement.length}/5000
+            </span>
           </label>
-          
+
           <button
             type="submit"
             disabled={loading}
@@ -100,7 +125,7 @@ export default function MicroservicesPage() {
           >
             {loading ? "⏳ Generando..." : "🚀 Generar Casos de Prueba MS"}
           </button>
-          
+
           {error && (
             <div className="rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-800">
               ❌ {error}
@@ -110,13 +135,46 @@ export default function MicroservicesPage() {
 
         {result && (
           <section className="space-y-6 rounded-2xl border border-gray-200 bg-gray-50 p-6">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-1">
-                📊 Resultado
-              </h2>
-              <p className="text-sm text-gray-600">
-                Status: <span className="font-bold text-green-600">{result.status.toUpperCase()}</span>
-              </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900 mb-1">
+                  📊 Resultado
+                </h2>
+                <p className="text-sm text-gray-600">
+                  Status:{" "}
+                  <span className="font-bold text-green-600">
+                    {result.status.toUpperCase()}
+                  </span>
+                </p>
+              </div>
+              <div className="flex gap-2">
+                {hasMatrix && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      downloadText(
+                        matrixToCSV(result.matrix_columns, result.matrix_data),
+                        "matriz_pruebas_ms.csv",
+                        "text/csv"
+                      )
+                    }
+                    className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50"
+                  >
+                    ⬇ CSV
+                  </button>
+                )}
+                {result.gherkin_content && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      downloadText(result.gherkin_content, "casos_ms.feature")
+                    }
+                    className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50"
+                  >
+                    ⬇ .feature
+                  </button>
+                )}
+              </div>
             </div>
 
             {hasMatrix && (
@@ -125,7 +183,9 @@ export default function MicroservicesPage() {
                   <thead className="bg-blue-50 text-xs uppercase text-blue-700">
                     <tr>
                       {result.matrix_columns.map((col) => (
-                        <th key={col} className="px-4 py-3 font-medium">{col}</th>
+                        <th key={col} className="px-4 py-3 font-medium">
+                          {col}
+                        </th>
                       ))}
                     </tr>
                   </thead>
@@ -133,7 +193,9 @@ export default function MicroservicesPage() {
                     {result.matrix_data.map((row, i) => (
                       <tr key={i} className="bg-white">
                         {result.matrix_columns.map((col) => (
-                          <td key={col} className="px-4 py-3 text-gray-700">{row[col]}</td>
+                          <td key={col} className="px-4 py-3 text-gray-700">
+                            {row[col]}
+                          </td>
                         ))}
                       </tr>
                     ))}
@@ -144,7 +206,9 @@ export default function MicroservicesPage() {
 
             {result.gherkin_content && (
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🧾 Casos Gherkin</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  🧾 Casos Gherkin
+                </h3>
                 <pre className="whitespace-pre-wrap rounded-xl border border-purple-200 bg-purple-50 p-4 text-sm">
                   {result.gherkin_content}
                 </pre>
@@ -165,4 +229,3 @@ export default function MicroservicesPage() {
     </div>
   );
 }
-

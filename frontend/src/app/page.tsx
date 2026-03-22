@@ -11,12 +11,30 @@ type HannahResponse = {
   error?: string;
 };
 
-// Usar el proxy de Vercel (ruta relativa) o variable de entorno como fallback
-// El proxy está en /api/modal_proxy.py y reenvía a Modal
-const ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT || 
-                 (typeof window !== 'undefined' 
-                   ? `${window.location.origin}/api/analizar-requerimiento`
-                   : '/api/analizar-requerimiento');
+// Usar variable de entorno o el proxy de Vercel como fallback
+const ENDPOINT =
+  process.env.NEXT_PUBLIC_API_ENDPOINT ||
+  (typeof window !== "undefined"
+    ? `${window.location.origin}/api/analizar-requerimiento`
+    : "/api/analizar-requerimiento");
+
+function downloadText(content: string, filename: string, mime = "text/plain") {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function matrixToCSV(columns: string[], rows: Record<string, string>[]) {
+  const header = columns.map((c) => `"${c}"`).join(",");
+  const body = rows.map((row) =>
+    columns.map((col) => `"${(row[col] ?? "").replace(/"/g, '""')}"`).join(",")
+  );
+  return [header, ...body].join("\n");
+}
 
 export default function Home() {
   const [requirement, setRequirement] = useState("");
@@ -33,13 +51,13 @@ export default function Home() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!ENDPOINT) {
-      setError("Configura NEXT_PUBLIC_MODAL_ENDPOINT.");
+    if (!requirement.trim()) {
+      setError("Ingresa un requerimiento.");
       return;
     }
 
-    if (!requirement.trim()) {
-      setError("Ingresa un requerimiento.");
+    if (requirement.length > 5000) {
+      setError("El requerimiento no puede superar 5000 caracteres.");
       return;
     }
 
@@ -88,8 +106,7 @@ export default function Home() {
         <header className="flex flex-col gap-4">
           <div className="space-y-3">
             <h1 className="text-3xl font-semibold text-slate-50">
-              
-       Hannah QA Agent
+              Hannah QA Agent
             </h1>
             <p className="text-base leading-relaxed text-slate-300">
               Generate test matrices and Gherkin scenarios with AI
@@ -105,12 +122,6 @@ export default function Home() {
         </header>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {!ENDPOINT && (
-            <div className="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4 text-sm text-amber-100">
-              ⚠️ Configura NEXT_PUBLIC_API_ENDPOINT o asegúrate de que el proxy esté configurado
-            </div>
-          )}
-          
           <label className="block">
             <span className="mb-3 block text-xs font-semibold tracking-[0.2em] text-slate-400">
               BUSINESS REQUIREMENT
@@ -119,11 +130,15 @@ export default function Home() {
               value={requirement}
               onChange={(e) => setRequirement(e.target.value)}
               rows={6}
+              maxLength={5000}
               className="w-full rounded-2xl border border-white/5 bg-[#050507] p-4 text-base text-slate-100 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.02)] transition focus:border-purple-500/60 focus:ring-2 focus:ring-purple-500/30"
               placeholder="Example: As a user, I want to log in..."
             />
+            <span className="mt-1 block text-right text-xs text-slate-500">
+              {requirement.length}/5000
+            </span>
           </label>
-          
+
           <button
             type="submit"
             disabled={loading}
@@ -131,7 +146,7 @@ export default function Home() {
           >
             {loading ? "⏳ Generating..." : "🚀 Send to Hannah"}
           </button>
-          
+
           {error && (
             <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-4 text-sm text-rose-100">
               ❌ {error}
@@ -141,13 +156,46 @@ export default function Home() {
 
         {result && (
           <section className="space-y-6 rounded-[28px] border border-white/5 bg-[#08080B] p-6">
-            <div>
-              <h2 className="text-xl font-semibold text-slate-50 mb-1">
-                📊 Result
-              </h2>
-              <p className="text-sm text-slate-300">
-                Status: <span className="font-bold text-emerald-300">{result.status.toUpperCase()}</span>
-              </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-slate-50 mb-1">
+                  📊 Result
+                </h2>
+                <p className="text-sm text-slate-300">
+                  Status:{" "}
+                  <span className="font-bold text-emerald-300">
+                    {result.status.toUpperCase()}
+                  </span>
+                </p>
+              </div>
+              <div className="flex gap-2">
+                {hasMatrix && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      downloadText(
+                        matrixToCSV(result.matrix_columns, result.matrix_data),
+                        "matriz_pruebas.csv",
+                        "text/csv"
+                      )
+                    }
+                    className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-slate-200 transition hover:bg-white/10"
+                  >
+                    ⬇ CSV
+                  </button>
+                )}
+                {result.gherkin_content && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      downloadText(result.gherkin_content, "casos.feature")
+                    }
+                    className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-slate-200 transition hover:bg-white/10"
+                  >
+                    ⬇ .feature
+                  </button>
+                )}
+              </div>
             </div>
 
             {hasMatrix && (
@@ -156,7 +204,9 @@ export default function Home() {
                   <thead className="bg-white/5 text-xs uppercase tracking-[0.18em] text-slate-300">
                     <tr>
                       {result.matrix_columns.map((col) => (
-                        <th key={col} className="px-4 py-3 font-medium tracking-wide">{col}</th>
+                        <th key={col} className="px-4 py-3 font-medium tracking-wide">
+                          {col}
+                        </th>
                       ))}
                     </tr>
                   </thead>
@@ -164,7 +214,9 @@ export default function Home() {
                     {result.matrix_data.map((row, i) => (
                       <tr key={i} className="bg-transparent">
                         {result.matrix_columns.map((col) => (
-                          <td key={col} className="px-4 py-3 text-slate-200">{row[col]}</td>
+                          <td key={col} className="px-4 py-3 text-slate-200">
+                            {row[col]}
+                          </td>
                         ))}
                       </tr>
                     ))}
@@ -175,7 +227,9 @@ export default function Home() {
 
             {result.gherkin_content && (
               <div>
-                <h3 className="text-lg font-semibold text-slate-50 mb-2">🧾 Gherkin Scenarios</h3>
+                <h3 className="text-lg font-semibold text-slate-50 mb-2">
+                  🧾 Gherkin Scenarios
+                </h3>
                 <pre className="whitespace-pre-wrap rounded-2xl border border-white/5 bg-[#050507] p-4 text-sm text-indigo-100">
                   {result.gherkin_content}
                 </pre>
