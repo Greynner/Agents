@@ -54,7 +54,7 @@ Hannah es un agente de QA impulsado por IA que transforma un requerimiento (HDU 
 ## 📂 Estructura del Proyecto
 
 ```
-IA-Agent-QA/
+Agents/
 ├── src/
 │   ├── IA_agentQA_V3.py          # 🌸 Agente principal (QA general) - Modal + Vercel
 │   ├── IA_agentQA_ms_modal.py    # 🤖 Agente microservicios - Modal + Vercel
@@ -127,7 +127,7 @@ IA-Agent-QA/
 1. **Clonar el repositorio:**
    ```bash
    git clone https://github.com/Greynner/IA-Agent-QA.git
-   cd IA-Agent-QA
+   cd IA-Agent-QA  # o cd Agents si lo renombraste localmente
    ```
 
 2. **Configurar Doppler:**

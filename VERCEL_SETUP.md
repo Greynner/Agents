@@ -50,7 +50,7 @@ MODAL_PROXY_TIMEOUT=60  # Timeout en segundos (default: 60)
 
 1. **Despliega la app de Modal:**
    ```bash
-   cd IA-Agent-QA/Backend/src
+   cd Backend/src
    modal deploy IA_agentQA_V3.py
    ```
 
@@ -117,4 +117,3 @@ El frontend ahora llama a esta ruta relativa, que funciona tanto en desarrollo c
 3. Configura `MODAL_BASE_URL` en Vercel
 4. Redespliega la aplicación en Vercel
 5. Prueba la aplicación en `https://qa-agent-two.vercel.app/`
-

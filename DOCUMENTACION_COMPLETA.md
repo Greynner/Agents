@@ -1,4 +1,4 @@
-# 📚 Documentación Completa del Proyecto IA-Agent-QA
+# 📚 Documentación Completa del Proyecto Agents
 
 ## Tabla de Contenidos
 
@@ -1235,4 +1235,3 @@ JSONResponse(result) →
 ---
 
 **Última actualización:** Octubre 2025
-
