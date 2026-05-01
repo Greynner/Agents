@@ -237,6 +237,8 @@ y 404 si el cliente no existe.
 
 Ver [COMANDOS_RAPIDOS.md](COMANDOS_RAPIDOS.md) para la lista completa de comandos.
 
+> Nota: el repositorio remoto se mantiene como `IA-Agent-QA`, pero localmente esta carpeta puede estar renombrada como `Agents`.
+
 ### Principales
 
 ```bash
