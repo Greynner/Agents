@@ -1,10 +1,8 @@
 import os
 import json
-import traceback
 from pathlib import Path
 
 import modal
-import pandas as pd
 from dotenv import load_dotenv
 from openai import OpenAI, OpenAIError
 from fastapi import Request
@@ -35,8 +33,6 @@ image = (
     modal.Image.debian_slim()
     .pip_install(
         "openai>=1.0.0",
-        "pandas>=2.0.0",
-        "openpyxl",
         "fastapi",
         "requests",
         "python-dotenv",
