@@ -66,11 +66,14 @@ export async function POST(request: NextRequest) {
       status: response.status,
       headers: corsHeaders,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('❌ Error en proxy:', error);
 
+    const errorName = error instanceof Error ? error.name : '';
+    const errorMessage = error instanceof Error ? error.message : 'Error inesperado en el proxy';
+
     // Manejar timeout
-    if (error.name === 'AbortError' || error.name === 'TimeoutError') {
+    if (errorName === 'AbortError' || errorName === 'TimeoutError') {
       return NextResponse.json(
         {
           error: `Timeout al conectar con Modal (>${PROXY_TIMEOUT / 1000}s)`,
@@ -84,10 +87,10 @@ export async function POST(request: NextRequest) {
 
     // Otros errores
     return NextResponse.json(
-      {
-        error: error.message || 'Error inesperado en el proxy',
-        detail: 'Revisa los logs del servidor',
-      },
+        {
+          error: errorMessage,
+          detail: 'Revisa los logs del servidor',
+        },
       {
         status: 500,
         headers: corsHeaders,
@@ -110,4 +113,3 @@ export async function OPTIONS() {
     }
   );
 }
-
