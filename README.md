@@ -1,21 +1,21 @@
 # Hannah QA Agent
 
-Agente de QA con IA que genera:
+AI-powered QA agent that generates:
 
-- Matriz de casos de prueba
-- Escenarios Gherkin
-- Variante especializada para pruebas de microservicios/API REST
+- Test case matrices
+- Gherkin scenarios
+- A specialized variant for microservices / REST API testing
 
-## Estructura principal
+## Main structure
 
 ```txt
-frontend/                  # UI Next.js
-api/modal_proxy.py          # Proxy Vercel hacia Modal
-src/IA_agentQA_V3.py        # Backend Modal QA general
-src/IA_agentQA_ms_modal.py  # Backend Modal microservicios
+frontend/                  # Next.js UI
+api/modal_proxy.py          # Vercel proxy to Modal
+src/IA_agentQA_V3.py        # General QA Modal backend
+src/IA_agentQA_ms_modal.py  # Microservices Modal backend
 ```
 
-## Desarrollo local
+## Local development
 
 Frontend:
 
@@ -28,26 +28,28 @@ npm run dev
 Checks:
 
 ```bash
-npm run check
+cd frontend
+npm run lint
+npm run build
 ```
 
-Smoke tests backend:
+Backend smoke tests:
 
 ```bash
 doppler run -- python src/IA_agentQA_V3.py
 doppler run -- python src/IA_agentQA_ms_modal.py
 ```
 
-## Deploy backend
+## Backend deployment
 
 ```bash
 modal deploy src/IA_agentQA_V3.py
 modal deploy src/IA_agentQA_ms_modal.py
 ```
 
-## Variables requeridas
+## Required variables
 
 - `OPENAI_API_KEY`
-- `MODAL_BASE_URL` para el proxy Vercel
-- `MODAL_API_KEY` opcional
-- Variables Axiom opcionales para logging
+- `MODAL_BASE_URL` for the Vercel proxy
+- `MODAL_API_KEY` optional
+- Optional Axiom variables for logging
