@@ -49,6 +49,14 @@ doppler run -- python src/IA_agentQA_V3.py
 doppler run -- python src/IA_agentQA_ms_modal.py
 ```
 
+Generate QA assets from a Linear issue from the repository root:
+
+```bash
+modal run Backend/src/modal_linear.py::generate_tests --issue-id QA-X
+```
+
+Replace `QA-X` with the Linear issue identifier.
+
 ## Backend deployment
 
 ```bash
